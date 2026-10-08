@@ -1,0 +1,20 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+
+# Dependências e Builds
+node_modules/
+dist/
+build/
+coverage/
+*.log
+
+# Caches de IDEs e Editores
+.idea/
+.vscode/
+*.swp
+*.swo
+*~

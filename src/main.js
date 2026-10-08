@@ -78,14 +78,29 @@ class HanoiApplication {
       this.saveCurrentSession();
     });
 
-    // Desbloqueia AudioContext no primeiro gesto do usuário (conformidade com autoplay)
+    // Desbloqueia AudioContext em qualquer primeiro gesto do usuário (conformidade total mobile iOS/Android)
+    const unlockEvents = ['touchstart', 'touchend', 'pointerdown', 'mousedown', 'keydown'];
     const unlockAudio = () => {
-      soundManager._getAudioContext();
-      window.removeEventListener('pointerdown', unlockAudio);
-      window.removeEventListener('keydown', unlockAudio);
+      const ctx = soundManager._getAudioContext();
+      if (ctx) {
+        if (ctx.state === 'suspended') {
+          ctx.resume().catch(() => {});
+        }
+        // Reproduz um buffer silencioso para aquecer o subsistema de áudio no iOS Safari
+        try {
+          const buffer = ctx.createBuffer(1, 1, 22050);
+          const source = ctx.createBufferSource();
+          source.buffer = buffer;
+          source.connect(ctx.destination);
+          source.start(0);
+        } catch {}
+
+        if (ctx.state === 'running') {
+          unlockEvents.forEach((ev) => window.removeEventListener(ev, unlockAudio));
+        }
+      }
     };
-    window.addEventListener('pointerdown', unlockAudio, { once: true, passive: true });
-    window.addEventListener('keydown', unlockAudio, { once: true, passive: true });
+    unlockEvents.forEach((ev) => window.addEventListener(ev, unlockAudio, { passive: true }));
 
     // 4. Restaura sessão anterior salva (se houver) ou inicializa estado padrão
     this.restoreSavedSession();

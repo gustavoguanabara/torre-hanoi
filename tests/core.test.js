@@ -733,6 +733,41 @@ describe('Módulo de Efeitos Sonoros (SoundManager)', () => {
     sm.playVictory();
     expect(sm._ctx).toBe(null);
   });
+
+  it('deve manter o som ligado por padrão ao recarregar a página e só silenciar sob escolha explícita', () => {
+    const store = {};
+    const mockStorage = {
+      getItem: (k) => store[k] ?? null,
+      setItem: (k, v) => { store[k] = String(v); },
+      removeItem: (k) => { delete store[k]; }
+    };
+    const origWindow = globalThis.window;
+    globalThis.window = { localStorage: mockStorage };
+
+    // 1. Primeira carga ou atualização: som sempre ligado por padrão
+    let sm = new SoundManager();
+    expect(sm.isMuted).toBe(false);
+
+    // 2. Usuário escolhe explicitamente mutar
+    sm.setMuted(true);
+    expect(sm.isMuted).toBe(true);
+    expect(mockStorage.getItem('hanoi_sound_user_muted')).toBe('true');
+
+    // 3. Ao recarregar com escolha explícita de mudo gravada, mantém mudo
+    sm = new SoundManager();
+    expect(sm.isMuted).toBe(true);
+
+    // 4. Usuário ativa o som novamente
+    sm.setMuted(false);
+    expect(sm.isMuted).toBe(false);
+    expect(mockStorage.getItem('hanoi_sound_user_muted')).toBe(null);
+
+    // 5. Ao recarregar a página, mantém o som ligado
+    sm = new SoundManager();
+    expect(sm.isMuted).toBe(false);
+
+    globalThis.window = origWindow;
+  });
 });
 
 

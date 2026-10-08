@@ -7,17 +7,23 @@
 export class SoundManager {
   constructor() {
     this._ctx = null;
-    this._isMuted = false;
+    this._isMuted = false; // Som ligado é SEMPRE o padrão
 
-    // Recupera preferência de áudio do jogador salva no storage
+    // O som só fica desligado se o usuário tiver explicitamente escolhido desligar na barra superior
     try {
       if (typeof window !== 'undefined' && window.localStorage) {
-        const saved = window.localStorage.getItem('hanoi_sound_enabled');
-        if (saved !== null) {
-          this._isMuted = saved === 'false';
+        // Limpa valor legado que poderia silenciar o jogo indevidamente ao atualizar a página
+        if (window.localStorage.getItem('hanoi_sound_enabled') === 'false') {
+          window.localStorage.removeItem('hanoi_sound_enabled');
         }
+
+        // Lê a preferência explícita definida pelo botão da barra superior
+        const userMuted = window.localStorage.getItem('hanoi_sound_user_muted');
+        this._isMuted = userMuted === 'true';
       }
-    } catch {}
+    } catch {
+      this._isMuted = false;
+    }
   }
 
   get isMuted() {
@@ -28,6 +34,13 @@ export class SoundManager {
     this._isMuted = Boolean(muted);
     try {
       if (typeof window !== 'undefined' && window.localStorage) {
+        if (this._isMuted) {
+          // Usuário escolheu explicitamente desligar o áudio
+          window.localStorage.setItem('hanoi_sound_user_muted', 'true');
+        } else {
+          // Usuário ativou o áudio: remove a restrição de mudo
+          window.localStorage.removeItem('hanoi_sound_user_muted');
+        }
         window.localStorage.setItem('hanoi_sound_enabled', String(!this._isMuted));
       }
     } catch {}
