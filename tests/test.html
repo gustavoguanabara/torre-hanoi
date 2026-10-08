@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Testes Automatizados - Torre de Hanói</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --success: #10b981;
+      --success-bg: rgba(16, 185, 129, 0.12);
+      --danger: #ef4444;
+      --danger-bg: rgba(239, 68, 68, 0.12);
+      --accent: #38bdf8;
+      --font-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      padding: 2rem 1rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 860px;
+    }
+
+    header {
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 1.5rem;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .btn {
+      background: var(--card-bg);
+      color: var(--accent);
+      border: 1px solid var(--card-border);
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .btn:hover {
+      border-color: var(--accent);
+      background: #273549;
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .metric-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .metric-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .metric-value {
+      font-size: 1.6rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+    }
+
+    .metric-value.passed { color: var(--success); }
+    .metric-value.failed { color: var(--danger); }
+    .metric-value.total { color: var(--accent); }
+
+    .suite-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      margin-bottom: 1.25rem;
+      overflow: hidden;
+    }
+
+    .suite-header {
+      padding: 0.9rem 1.25rem;
+      background: #192233;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+      font-size: 1rem;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .suite-badge {
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+    }
+
+    .test-list {
+      list-style: none;
+    }
+
+    .test-item {
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      font-size: 0.9rem;
+    }
+
+    .test-item:last-child {
+      border-bottom: none;
+    }
+
+    .test-name {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .test-status-icon {
+      font-size: 1rem;
+    }
+
+    .test-duration {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .test-error {
+      margin-top: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      background: var(--danger-bg);
+      border-left: 3px solid var(--danger);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: #fca5a5;
+      white-space: pre-wrap;
+    }
+
+    .status-banner {
+      padding: 1rem 1.25rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--success-bg);
+      border: 1px solid var(--success);
+      color: #a7f3d0;
+    }
+
+    .status-banner.error {
+      background: var(--danger-bg);
+      border-color: var(--danger);
+      color: #fca5a5;
+    }
+
+    footer {
+      margin-top: 2rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Responsividade e Otimização para Telas Touch */
+    @media (pointer: coarse) {
+      .btn {
+        min-height: 42px;
+        padding: 0.65rem 1rem;
+      }
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 1.25rem 0.75rem;
+      }
+
+      header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+        margin-bottom: 1.25rem;
+        padding-bottom: 1.25rem;
+      }
+
+      h1 {
+        font-size: 1.3rem;
+        justify-content: center;
+        text-align: center;
+      }
+
+      .nav-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        width: 100%;
+        justify-content: center;
+      }
+
+      .nav-links .btn {
+        flex: 1 1 calc(50% - 0.5rem);
+        min-width: 130px;
+        justify-content: center;
+        min-height: 42px;
+        font-size: 0.85rem;
+        text-align: center;
+      }
+
+      .nav-links #btn-rerun {
+        flex: 1 1 100%;
+      }
+
+      .status-banner {
+        padding: 0.85rem 1rem;
+        font-size: 0.88rem;
+        text-align: center;
+        justify-content: center;
+      }
+
+      /* Métricas em grid 2x2 no mobile */
+      .metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.6rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .metric-card {
+        padding: 0.75rem 0.85rem;
+      }
+
+      .metric-label {
+        font-size: 0.7rem;
+      }
+
+      .metric-value {
+        font-size: 1.35rem;
+      }
+
+      .suite-card {
+        margin-bottom: 1rem;
+      }
+
+      .suite-header {
+        padding: 0.75rem 0.9rem;
+        font-size: 0.9rem;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+      }
+
+      .suite-badge {
+        font-size: 0.72rem;
+      }
+
+      .test-item {
+        padding: 0.65rem 0.85rem;
+        font-size: 0.84rem;
+        gap: 0.5rem;
+        align-items: flex-start;
+      }
+
+      .test-name {
+        gap: 0.45rem;
+        align-items: flex-start;
+        flex: 1;
+        word-break: break-word;
+      }
+
+      .test-status-icon {
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+
+      .test-duration {
+        flex-shrink: 0;
+        margin-left: auto;
+        font-size: 0.72rem;
+        padding-top: 1px;
+      }
+
+      .test-error {
+        font-size: 0.76rem;
+        padding: 0.4rem 0.6rem;
+      }
+
+      footer {
+        margin-top: 1.5rem;
+        font-size: 0.75rem;
+      }
+    }
+
+    @media (max-width: 380px) {
+      h1 {
+        font-size: 1.15rem;
+      }
+
+      .nav-links .btn {
+        flex: 1 1 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🧪 Suíte de Testes Automatizados</h1>
+      <div class="nav-links">
+        <a href="../status.html" class="btn">🩺 Painel de Status</a>
+        <a href="../index.html" class="btn">🎮 Simulador</a>
+        <button id="btn-rerun" class="btn">🔄 Reexecutar</button>
+      </div>
+    </header>
+
+    <div id="status-banner" class="status-banner">
+      <span>⏳ Executando suítes de testes unitários...</span>
+    </div>
+
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <span class="metric-label">Passaram</span>
+        <span id="metric-passed" class="metric-value passed">0</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-label">Falharam</span>
+        <span id="metric-failed" class="metric-value failed">0</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-label">Total de Testes</span>
+        <span id="metric-total" class="metric-value total">0</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-label">Tempo Total</span>
+        <span id="metric-duration" class="metric-value">0ms</span>
+      </div>
+    </div>
+
+    <div id="suites-container"></div>
+
+    <footer>
+      Torre de Hanói • Test Runner Isomórfico Zero-Dependency • ECMAScript ES2022+
+    </footer>
+  </div>
+
+  <script type="module">
+    import { runner } from './runner.js';
+    import './core.test.js';
+
+    async function executeTests() {
+      const suitesContainer = document.getElementById('suites-container');
+      const banner = document.getElementById('status-banner');
+      suitesContainer.innerHTML = '';
+
+      const results = await runner.run();
+
+      document.getElementById('metric-passed').textContent = results.totalPassed;
+      document.getElementById('metric-failed').textContent = results.totalFailed;
+      document.getElementById('metric-total').textContent = results.totalTests;
+      document.getElementById('metric-duration').textContent = `${results.duration}ms`;
+
+      if (results.totalFailed === 0) {
+        banner.className = 'status-banner';
+        banner.innerHTML = `<span>✅ <strong>100% de Sucesso:</strong> Todas as ${results.totalTests} asserções passaram sem falhas!</span>`;
+      } else {
+        banner.className = 'status-banner error';
+        banner.innerHTML = `<span>❌ <strong>Falha detectada:</strong> ${results.totalFailed} teste(s) falharam. Verifique os detalhes abaixo.</span>`;
+      }
+
+      for (const suite of results.suites) {
+        const suiteEl = document.createElement('div');
+        suiteEl.className = 'suite-card';
+
+        const headerEl = document.createElement('div');
+        headerEl.className = 'suite-header';
+        headerEl.innerHTML = `
+          <span>📦 ${suite.name}</span>
+          <span class="suite-badge">${suite.passed}/${suite.tests.length} OK • ${suite.duration}ms</span>
+        `;
+        suiteEl.appendChild(headerEl);
+
+        const listEl = document.createElement('ul');
+        listEl.className = 'test-list';
+
+        for (const test of suite.tests) {
+          const itemEl = document.createElement('li');
+          itemEl.className = 'test-item';
+
+          const isPass = test.status === 'passed';
+          itemEl.innerHTML = `
+            <div>
+              <div class="test-name">
+                <span class="test-status-icon">${isPass ? '✅' : '❌'}</span>
+                <span>${test.name}</span>
+              </div>
+              ${!isPass ? `<div class="test-error">${test.error?.message || test.error}</div>` : ''}
+            </div>
+            <span class="test-duration">${test.duration}ms</span>
+          `;
+          listEl.appendChild(itemEl);
+        }
+
+        suiteEl.appendChild(listEl);
+        suitesContainer.appendChild(suiteEl);
+      }
+    }
+
+    document.getElementById('btn-rerun').addEventListener('click', () => {
+      executeTests();
+    });
+
+    executeTests();
+  </script>
+</body>
+</html>

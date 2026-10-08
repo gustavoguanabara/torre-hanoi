@@ -1,0 +1,24 @@
+{
+  "name": "torre-hanoi",
+  "version": "1.0.1",
+  "description": "Simulador didático da Torre de Hanói em Vanilla Web (HTML5 Canvas 2D, CSS3, JavaScript ES2022+)",
+  "type": "module",
+  "main": "src/main.js",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "serve:py": "python3 -m http.server 8000",
+    "test": "node tests/cli_runner.js",
+    "status": "node -e \"console.log('✅ Ambiente Operacional: Node ' + process.version + ' | Zero-Dependency');\""
+  },
+  "keywords": [
+    "torre-de-hanoi",
+    "hanoi-tower",
+    "canvas-2d",
+    "vanilla-javascript",
+    "zero-dependency",
+    "github-pages"
+  ],
+  "author": "Gustavo Guanabara",
+  "license": "MIT"
+}

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Torre de Hanói - Simulador Didático</title>
+  <meta name="description" content="Simulador didático da Torre de Hanói em Vanilla Web (HTML5 Canvas 2D, CSS3, JavaScript ES2022+)">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-wrapper">
+    <!-- Header com todos os controles de topo unificados -->
+    <header class="app-header">
+      <div class="brand">
+        <span class="brand-icon">🏛️</span>
+        <h1 class="brand-title" id="lbl-title">Torre de Hanói</h1>
+      </div>
+
+      <div class="top-nav">
+        <!-- Ações do Jogo: Desfazer, Pedir Dica e Áudio -->
+        <div class="pill-control action-controls" role="group" aria-label="Ações da Partida">
+          <button id="btn-undo" class="pill-action-btn" title="Desfazer jogada" aria-label="Desfazer" disabled>
+            ↩️
+          </button>
+          <button id="btn-hint" class="pill-action-btn btn-hint-glow" title="Pedir Dica" aria-label="Pedir Dica">
+            💡
+          </button>
+          <button id="btn-sound" class="pill-action-btn" title="Desativar efeitos sonoros (Mudo)" aria-label="Desativar efeitos sonoros">
+            🔊
+          </button>
+        </div>
+
+        <!-- Controle compacto de Discos (2 a 10) -->
+        <div class="pill-control disk-stepper" role="group" aria-label="Quantidade de Discos" title="Quantidade de Discos (2 a 10)">
+          <span class="control-icon">🥞</span>
+          <button id="btn-disk-dec" class="pill-step-btn" title="Diminuir discos" aria-label="Diminuir discos">−</button>
+          <button id="btn-disk-inc" class="pill-step-btn" title="Aumentar discos" aria-label="Aumentar discos">+</button>
+        </div>
+
+        <!-- Controle compacto de Pino de Destino (2 ou 3) -->
+        <div class="pill-control target-selector" role="group" aria-label="Pino de Destino" title="Pino de Destino">
+          <span class="control-icon">🎯</span>
+          <div class="segmented-pill">
+            <button id="btn-target-peg2" class="pill-option" data-target="1" title="Destino: Pino 2" aria-label="Destino: Pino 2">2</button>
+            <button id="btn-target-peg3" class="pill-option active" data-target="2" title="Destino: Pino 3" aria-label="Destino: Pino 3">3</button>
+          </div>
+        </div>
+
+        <!-- Seletor de Idioma -->
+        <div class="lang-selector">
+          <button id="btn-lang-pt" class="lang-btn active" title="Português (Brasil)" aria-label="Português (Brasil)">🇧🇷</button>
+          <button id="btn-lang-en" class="lang-btn" title="English (United States)" aria-label="English (United States)">🇺🇸</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Palco Central: Tabuleiro Gráfico e Métricas -->
+    <div class="game-stage">
+      <!-- Canvas Principal do Jogo -->
+      <main class="game-viewport">
+        <canvas id="hanoiCanvas" aria-label="Tabuleiro gráfico da Torre de Hanói"></canvas>
+      </main>
+
+      <!-- Painel de Métricas -->
+      <section class="scoreboard" aria-label="Estatísticas da Partida">
+        <div class="score-card">
+          <span class="score-label" id="lbl-moves">Movimentos</span>
+          <span class="score-value highlight" id="val-moves">0</span>
+        </div>
+        <div class="score-card">
+          <span class="score-label" id="lbl-optimal">Mínimo Ótimo</span>
+          <span class="score-value optimal" id="val-optimal">7</span>
+        </div>
+        <div class="score-card">
+          <span class="score-label" id="lbl-timer">Tempo</span>
+          <span class="score-value" id="val-timer">00:00</span>
+        </div>
+        <div class="score-card">
+          <span class="score-label" id="lbl-hints">Dicas Usadas</span>
+          <span class="score-value" id="val-hints">0</span>
+        </div>
+      </section>
+    </div>
+
+    <!-- Status Bar do Sistema -->
+    <footer class="system-status-bar" role="contentinfo" aria-label="Status do Sistema">
+      <div class="status-bar-left">
+        <span class="status-brand-credit" id="status-brand-credit">Torre de Hanói - Desenvolvido por Gustavo Guanabara + Antigravity</span>
+      </div>
+      <div class="status-bar-right">
+        <span class="status-version-badge" id="status-version-badge" title="Versão atual: v1.0.1" aria-label="Versão atual: v1.0.1">v1.0.1</span>
+        <a href="status.html" id="link-status" class="status-icon-link" title="Painel de Status do Ambiente" aria-label="Status do Ambiente">🩺</a>
+        <a href="tests/test.html" id="link-tests" class="status-icon-link" title="Suíte de Testes Automatizados" aria-label="Suíte de Testes">🧪</a>
+      </div>
+    </footer>
+  </div>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
