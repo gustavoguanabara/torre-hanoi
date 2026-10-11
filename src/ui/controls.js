@@ -38,6 +38,7 @@ export class ControlsManager {
     this.btnTargetPeg2 = document.getElementById('btn-target-peg2');
     this.btnTargetPeg3 = document.getElementById('btn-target-peg3');
 
+    this.btnRestart = document.getElementById('btn-restart');
     this.btnUndo = document.getElementById('btn-undo');
     this.btnHint = document.getElementById('btn-hint');
     this.btnSound = document.getElementById('btn-sound');
@@ -111,6 +112,13 @@ export class ControlsManager {
         this.setTargetPegId(2);
         this.onRestartGame(this.currentDiskCount, 2);
       }
+    });
+
+    this.btnRestart?.addEventListener('click', () => {
+      triggerHaptic('select');
+      soundManager.playClick();
+      if (this.victoryModal) this.victoryModal.style.display = 'none';
+      this.onRestartGame(this.currentDiskCount, this.currentTargetPegId);
     });
 
     this.btnUndo?.addEventListener('click', () => {
@@ -199,6 +207,11 @@ export class ControlsManager {
 
     const hintsLbl = document.getElementById('lbl-hints');
     if (hintsLbl) hintsLbl.textContent = t('hints');
+
+    if (this.btnRestart) {
+      this.btnRestart.title = t('restartBtn');
+      this.btnRestart.setAttribute('aria-label', t('restartBtn'));
+    }
 
     if (this.btnUndo) {
       this.btnUndo.title = t('undo');

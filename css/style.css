@@ -159,6 +159,20 @@ body {
   box-shadow: 0 0 10px rgba(251, 191, 36, 0.35);
 }
 
+.pill-action-btn.btn-restart-action {
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.15s ease, border-color 0.15s ease;
+}
+
+.pill-action-btn.btn-restart-action:hover:not(:disabled) {
+  border-color: var(--accent-cyan);
+  background: #23314f;
+  transform: translateY(-1px) rotate(-45deg);
+}
+
+.pill-action-btn.btn-restart-action:active:not(:disabled) {
+  transform: translateY(0) rotate(-180deg) scale(0.92);
+}
+
 /* Stepper de Discos */
 .disk-stepper {
   gap: 3px;

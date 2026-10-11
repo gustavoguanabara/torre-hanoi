@@ -430,6 +430,25 @@ describe('Motor de Regras (HanoiGame)', () => {
     expect(game.pegs[1].count).toBe(0);
     expect(game.pegs[2].count).toBe(0);
   });
+
+  it('deve permitir reiniciar uma nova partida mantendo discos e destino customizados com init()', () => {
+    const game = new HanoiGame({ diskCount: 5, targetPegId: 1 });
+    game.moveDisk(0, 2);
+    game.moveDisk(0, 1);
+    expect(game.moveCount).toBe(2);
+
+    // Reinicia nova partida mantendo 5 discos e destino pino 2 (índice 1)
+    game.init(5, 1);
+    expect(game.diskCount).toBe(5);
+    expect(game.targetPegId).toBe(1);
+    expect(game.moveCount).toBe(0);
+    expect(game.hintCount).toBe(0);
+    expect(game.isWon).toBe(false);
+    expect(game.pegs[0].count).toBe(5);
+    expect(game.pegs[1].count).toBe(0);
+    expect(game.pegs[2].count).toBe(0);
+    expect(game.history.canUndo()).toBe(false);
+  });
 });
 
 describe('Módulo de Tempo (GameTimer)', () => {
@@ -513,6 +532,16 @@ describe('Módulo de Internacionalização (i18n)', () => {
 
     i18n.setLanguage('en-US');
     expect(i18n.t('versionTooltip')).toBe('Current version: v1.0.1');
+
+    i18n.setLanguage('pt-BR');
+  });
+
+  it('deve traduzir o tooltip do botão de reiniciar partida entre português e inglês', () => {
+    i18n.setLanguage('pt-BR');
+    expect(i18n.t('restartBtn')).toBe('Reiniciar partida (Novo jogo)');
+
+    i18n.setLanguage('en-US');
+    expect(i18n.t('restartBtn')).toBe('Restart game (New game)');
 
     i18n.setLanguage('pt-BR');
   });
