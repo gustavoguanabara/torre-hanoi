@@ -19,6 +19,29 @@ export class SoundManager {
       } catch {}
     }
 
+    // Pré-carrega o elemento silencioso assim que o DOM estiver pronto
+    if (typeof document !== 'undefined') {
+      if (document.readyState === 'loading' && typeof document.addEventListener === 'function') {
+        document.addEventListener('DOMContentLoaded', () => this._initSilentAudio(), { once: true });
+      } else {
+        this._initSilentAudio();
+      }
+
+      // Restaura o áudio silencioso e o contexto ao retornar para a aba no celular
+      if (typeof document.addEventListener === 'function') {
+        document.addEventListener('visibilitychange', () => {
+          if (document.visibilityState === 'visible' && !this._isMuted) {
+            if (this._silentAudio && this._silentAudio.paused) {
+              this._silentAudio.play().catch(() => {});
+            }
+            if (this._ctx && this._ctx.state === 'suspended') {
+              this._ctx.resume().catch(() => {});
+            }
+          }
+        });
+      }
+    }
+
     // O som só fica desligado se o usuário tiver explicitamente escolhido desligar na barra superior
     try {
       if (typeof window !== 'undefined' && window.localStorage) {
