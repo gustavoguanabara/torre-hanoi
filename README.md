@@ -2,10 +2,10 @@
 
 > **Simulador didático e interativo da clássica Torre de Hanói**, desenvolvido em **Vanilla Web** (HTML5 Canvas 2D, CSS3 moderno e JavaScript puro ES2022+ com ES Modules nativos), com arquitetura **100% Zero-Dependency** pronta para execução direta e publicação no **GitHub Pages**.
 
-![Versão](https://img.shields.io/badge/versão-1.0.1-38bdf8?style=flat-square)
+![Versão](https://img.shields.io/badge/versão-2.0.1-38bdf8?style=flat-square)
 ![Zero-Dependency](https://img.shields.io/badge/dependências-zero-10b981?style=flat-square)
 ![Canvas 2D](https://img.shields.io/badge/render-Canvas%202D%20%40%2060FPS-fbbf24?style=flat-square)
-![Testes](https://img.shields.io/badge/testes-50%20aprovados-10b981?style=flat-square)
+![Testes](https://img.shields.io/badge/testes-55%20aprovados-10b981?style=flat-square)
 ![Licença](https://img.shields.io/badge/licença-MIT-blue?style=flat-square)
 
 ---
@@ -48,7 +48,7 @@ $$\text{Mínimo Ótimo} = 2^n - 1$$
   - 🌟 **Mestre da Lógica:** Exatamente $2^n - 1$ movimentos.
   - 👍 **Muito Eficiente:** Até 150% do mínimo ótimo.
   - 💡 **Concluído:** Desafio finalizado com oportunidade de otimização.
-- 📊 **Status Bar do Sistema:** Rodapé moderno exibindo créditos autorais, tag de versão atual (`v1.0.1`) e atalhos rápidos para o painel de diagnóstico (`🩺`) e suíte de testes (`🧪`).
+- 📊 **Status Bar do Sistema:** Rodapé moderno exibindo créditos autorais, tag de versão atual (`v2.0.1`) e atalhos rápidos para o painel de diagnóstico (`🩺`) e suíte de testes (`🧪`).
 
 ---
 
@@ -168,5 +168,5 @@ Este repositório está 100% preparado para hospedagem estática direta e gratui
 
 - **Autor:** Gustavo Guanabara
 - **Concepção e Desenvolvimento:** Gustavo Guanabara + Antigravity (Google DeepMind)
-- **Versão:** 1.0.1
+- **Versão:** 2.0.1
 - **Licença:** [MIT](LICENSE)

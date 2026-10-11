@@ -528,10 +528,10 @@ describe('Módulo de Internacionalização (i18n)', () => {
 
   it('deve traduzir o tooltip da tag de versão na barra de status', () => {
     i18n.setLanguage('pt-BR');
-    expect(i18n.t('versionTooltip')).toBe('Versão atual: v1.0.1');
+    expect(i18n.t('versionTooltip')).toBe('Versão atual: v2.0.1');
 
     i18n.setLanguage('en-US');
-    expect(i18n.t('versionTooltip')).toBe('Current version: v1.0.1');
+    expect(i18n.t('versionTooltip')).toBe('Current version: v2.0.1');
 
     i18n.setLanguage('pt-BR');
   });
