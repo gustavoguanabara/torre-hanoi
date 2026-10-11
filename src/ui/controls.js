@@ -1,5 +1,6 @@
 import { i18n } from './i18n.js';
 import { soundManager } from './sound.js';
+import { triggerHaptic } from './haptics.js';
 
 /**
  * Gerenciador de Controles de Interface e Modais (ControlsManager)
@@ -68,6 +69,7 @@ export class ControlsManager {
 
   _setupEventListeners() {
     this.btnSound?.addEventListener('click', () => {
+      triggerHaptic('select');
       soundManager.toggleMute();
       this.updateSoundButton();
       if (!soundManager.isMuted) {
@@ -77,6 +79,7 @@ export class ControlsManager {
 
     this.btnDiskDec?.addEventListener('click', () => {
       if (this.currentDiskCount > 2) {
+        triggerHaptic('select');
         soundManager.playClick();
         this.setDiskCount(this.currentDiskCount - 1);
         this.onRestartGame(this.currentDiskCount, this.currentTargetPegId);
@@ -85,6 +88,7 @@ export class ControlsManager {
 
     this.btnDiskInc?.addEventListener('click', () => {
       if (this.currentDiskCount < 10) {
+        triggerHaptic('select');
         soundManager.playClick();
         this.setDiskCount(this.currentDiskCount + 1);
         this.onRestartGame(this.currentDiskCount, this.currentTargetPegId);
@@ -93,6 +97,7 @@ export class ControlsManager {
 
     this.btnTargetPeg2?.addEventListener('click', () => {
       if (this.currentTargetPegId !== 1) {
+        triggerHaptic('select');
         soundManager.playClick();
         this.setTargetPegId(1);
         this.onRestartGame(this.currentDiskCount, 1);
@@ -101,6 +106,7 @@ export class ControlsManager {
 
     this.btnTargetPeg3?.addEventListener('click', () => {
       if (this.currentTargetPegId !== 2) {
+        triggerHaptic('select');
         soundManager.playClick();
         this.setTargetPegId(2);
         this.onRestartGame(this.currentDiskCount, 2);
@@ -108,19 +114,23 @@ export class ControlsManager {
     });
 
     this.btnUndo?.addEventListener('click', () => {
+      triggerHaptic('select');
       this.onUndoClick();
     });
 
     this.btnHint?.addEventListener('click', () => {
+      triggerHaptic('select');
       this.onHintClick();
     });
 
     this.btnLangPt?.addEventListener('click', () => {
+      triggerHaptic('select');
       soundManager.playClick();
       this._changeLanguage('pt-BR');
     });
 
     this.btnLangEn?.addEventListener('click', () => {
+      triggerHaptic('select');
       soundManager.playClick();
       this._changeLanguage('en-US');
     });

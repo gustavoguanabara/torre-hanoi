@@ -525,7 +525,9 @@ describe('Módulo de Feedback Tátil (Haptics)', () => {
       triggerHaptic('grab');
       triggerHaptic('drop');
       triggerHaptic('select');
+      triggerHaptic('undo');
       triggerHaptic('error');
+      triggerHaptic('victory');
     } catch (e) {
       error = e;
     }
@@ -551,11 +553,11 @@ describe('Módulo de Feedback Tátil (Haptics)', () => {
     triggerHaptic('error');
 
     expect(calls.length).toBe(4);
-    expect(calls[0]).toBe(20);
-    expect(calls[1]).toBe(20);
-    expect(calls[2]).toBe(12);
+    expect(calls[0]).toBe(40);
+    expect(calls[1]).toBe(45);
+    expect(calls[2]).toBe(25);
     expect(Array.isArray(calls[3])).toBe(true);
-    expect(calls[3][0]).toBe(35);
+    expect(calls[3][0]).toBe(50);
 
     if (originalVibrate) {
       Object.defineProperty(globalThis.navigator, 'vibrate', {
@@ -565,6 +567,48 @@ describe('Módulo de Feedback Tátil (Haptics)', () => {
       });
     } else {
       delete globalThis.navigator.vibrate;
+    }
+  });
+
+  it('deve acionar o fallback tátil do WebKit (iOS Taptic Switch) quando navigator.vibrate estiver indisponível', () => {
+    let clickCount = 0;
+    const fakeLabel = {
+      click: () => {
+        clickCount++;
+      }
+    };
+
+    const origDoc = globalThis.document;
+    globalThis.document = {
+      createElement: (tag) => {
+        if (tag === 'label') return fakeLabel;
+        return {
+          setAttribute: () => {},
+          style: {},
+          appendChild: () => {}
+        };
+      },
+      body: {
+        appendChild: () => {}
+      }
+    };
+
+    const origVibrate = globalThis.navigator?.vibrate;
+    delete globalThis.navigator.vibrate;
+
+    triggerHaptic('grab');
+    triggerHaptic('drop');
+
+    expect(clickCount >= 2).toBe(true);
+
+    if (origDoc) {
+      globalThis.document = origDoc;
+    } else {
+      delete globalThis.document;
+    }
+
+    if (origVibrate) {
+      globalThis.navigator.vibrate = origVibrate;
     }
   });
 });
@@ -767,6 +811,43 @@ describe('Módulo de Efeitos Sonoros (SoundManager)', () => {
     expect(sm.isMuted).toBe(false);
 
     globalThis.window = origWindow;
+  });
+
+  it('deve gerenciar o áudio silencioso de bypass e responder a unlock e setMuted', () => {
+    let playCalled = false;
+    let pauseCalled = false;
+    const fakeAudio = {
+      play: () => {
+        playCalled = true;
+        return Promise.resolve();
+      },
+      pause: () => {
+        pauseCalled = true;
+      },
+      setAttribute: () => {},
+      style: {}
+    };
+
+    const origDoc = globalThis.document;
+    globalThis.document = {
+      createElement: () => fakeAudio,
+      body: { appendChild: () => {} }
+    };
+
+    const sm = new SoundManager();
+    sm.unlock();
+
+    expect(sm._silentAudio !== null).toBe(true);
+    expect(playCalled).toBe(true);
+
+    sm.setMuted(true);
+    expect(pauseCalled).toBe(true);
+
+    if (origDoc) {
+      globalThis.document = origDoc;
+    } else {
+      delete globalThis.document;
+    }
   });
 });
 

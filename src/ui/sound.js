@@ -9,6 +9,16 @@ export class SoundManager {
     this._ctx = null;
     this._isMuted = false; // Som ligado é SEMPRE o padrão
 
+    this._silentAudio = null;
+    this._unlocked = false;
+
+    // Configura a sessão de áudio imediatamente se suportado pelo navegador
+    if (typeof navigator !== 'undefined' && navigator.audioSession) {
+      try {
+        navigator.audioSession.type = 'playback';
+      } catch {}
+    }
+
     // O som só fica desligado se o usuário tiver explicitamente escolhido desligar na barra superior
     try {
       if (typeof window !== 'undefined' && window.localStorage) {
@@ -30,6 +40,62 @@ export class SoundManager {
     return this._isMuted;
   }
 
+  /**
+   * Inicializa o elemento de áudio silencioso HTML5.
+   * No iOS Safari, a reprodução de um elemento <audio> com playsinline força
+   * o WebKit a elevar a categoria de áudio para "Playback", furando a chave
+   * física de modo silencioso/vibrar e permitindo que a Web Audio API soe no alto-falante.
+   */
+  _initSilentAudio() {
+    if (typeof document === 'undefined' || this._silentAudio) return;
+
+    try {
+      const audio = document.createElement('audio');
+      // WAV PCM mono silencioso mínimo (44 bytes, 8000Hz)
+      audio.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
+      audio.loop = true;
+      audio.preload = 'auto';
+      audio.setAttribute('playsinline', '');
+      audio.setAttribute('webkit-playsinline', '');
+      audio.setAttribute('x-webkit-airplay', 'deny');
+      audio.style.position = 'fixed';
+      audio.style.top = '-9999px';
+      audio.style.left = '-9999px';
+      audio.style.width = '1px';
+      audio.style.height = '1px';
+      audio.style.opacity = '0';
+      audio.style.pointerEvents = 'none';
+
+      document.body?.appendChild(audio);
+      this._silentAudio = audio;
+    } catch {}
+  }
+
+  /**
+   * Desbloqueia o áudio e ativa o bypass de modo silencioso.
+   * Deve ser disparado nos primeiros gestos do usuário (touch, click, pointerdown).
+   */
+  unlock() {
+    this._initSilentAudio();
+
+    if (typeof navigator !== 'undefined' && navigator.audioSession) {
+      try {
+        navigator.audioSession.type = 'playback';
+      } catch {}
+    }
+
+    const ctx = this._getAudioContext();
+    if (ctx && ctx.state === 'suspended') {
+      ctx.resume().catch(() => {});
+    }
+
+    if (!this._isMuted && this._silentAudio) {
+      this._silentAudio.play().catch(() => {});
+    }
+
+    this._unlocked = true;
+  }
+
   setMuted(muted) {
     this._isMuted = Boolean(muted);
     try {
@@ -44,6 +110,15 @@ export class SoundManager {
         window.localStorage.setItem('hanoi_sound_enabled', String(!this._isMuted));
       }
     } catch {}
+
+    // Pausa ou retoma o áudio silencioso de bypass conforme a escolha do jogador
+    if (this._silentAudio) {
+      if (this._isMuted) {
+        this._silentAudio.pause();
+      } else {
+        this._silentAudio.play().catch(() => {});
+      }
+    }
   }
 
   toggleMute() {
@@ -62,6 +137,15 @@ export class SoundManager {
     if (this._ctx && this._ctx.state === 'suspended') {
       this._ctx.resume().catch(() => {});
     }
+
+    // Garante que o áudio silencioso de bypass esteja rodando caso o som esteja ligado
+    if (!this._isMuted) {
+      this._initSilentAudio();
+      if (this._silentAudio && this._silentAudio.paused) {
+        this._silentAudio.play().catch(() => {});
+      }
+    }
+
     return this._ctx;
   }
 

@@ -78,9 +78,10 @@ class HanoiApplication {
       this.saveCurrentSession();
     });
 
-    // Desbloqueia AudioContext em qualquer primeiro gesto do usuário (conformidade total mobile iOS/Android)
+    // Desbloqueia AudioContext e bypass de modo silencioso em qualquer primeiro gesto do usuário
     const unlockEvents = ['touchstart', 'touchend', 'pointerdown', 'mousedown', 'keydown'];
     const unlockAudio = () => {
+      soundManager.unlock();
       const ctx = soundManager._getAudioContext();
       if (ctx) {
         if (ctx.state === 'suspended') {
@@ -132,6 +133,7 @@ class HanoiApplication {
 
     if (result.success) {
       soundManager.playDrop(result.disk?.size || 3, this.game.diskCount);
+      triggerHaptic('drop');
       this.controls.updateMetrics(this.game.getSnapshot(), this.timer.getFormattedTime());
       this.saveCurrentSession();
     } else {
@@ -145,6 +147,7 @@ class HanoiApplication {
     const success = this.game.undo();
     if (success) {
       soundManager.playUndo();
+      triggerHaptic('undo');
       this.inputHandler.clearSelection();
       this.syncVisualState();
       this.controls.updateMetrics(this.game.getSnapshot(), this.timer.getFormattedTime());
@@ -211,6 +214,7 @@ class HanoiApplication {
     this.timer.pause();
     this.clearHint();
     soundManager.playVictory();
+    triggerHaptic('victory');
     this.particles.explode(this.renderer.width, this.renderer.height, 140);
     this.controls.updateMetrics(snapshot, this.timer.getFormattedTime());
     this.saveCurrentSession();
