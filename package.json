@@ -1,6 +1,6 @@
 {
   "name": "torre-hanoi",
-  "version": "2.0.1",
+  "version": "2.0.9",
   "description": "Simulador didático da Torre de Hanói em Vanilla Web (HTML5 Canvas 2D, CSS3, JavaScript ES2022+)",
   "type": "module",
   "main": "src/main.js",
